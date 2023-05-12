@@ -10,12 +10,15 @@ from config import RECALL_QUERY_FILE, RECALL_NQ, RECALL_TOPK, RECALL_RES, RECALL
 def save_search_res(collection_name, rand, results, search_param, query):
     if not os.path.exists(RECALL_RES):
         os.mkdir(RECALL_RES)
-    file_name = os.path.join(RECALL_RES, collection_name + '_' + str(search_param) + '_' + str(query) + '_recall.txt')
+    file_name = os.path.join(
+        RECALL_RES,
+        f'{collection_name}_{str(search_param)}_{str(query)}_recall.txt',
+    )
     with open(file_name, 'w',encoding='utf-8') as f:
         i = 0
         for result in results:
             for res in result:
-                line = str(rand[i]) + ' ' + str(res.id) + ' ' + str(res.distance)
+                line = f'{str(rand[i])} {str(res.id)} {str(res.distance)}'
                 f.write(line + '\n')
             f.write('\n')
             i = i + 1
@@ -24,9 +27,7 @@ def save_search_res(collection_name, rand, results, search_param, query):
 def compute_recall(collection_name, query, results, search_param, rand):
     ids = []
     for result in results:
-        temp = []
-        for res in result:
-            temp.append(res.id)
+        temp = [res.id for res in result]
         ids.append(temp)
 
     gt_ids = load_gt_ids()
@@ -36,16 +37,20 @@ def compute_recall(collection_name, query, results, search_param, rand):
 
         if not os.path.exists(RECALL_RES_TOPK):
             os.makedirs(RECALL_RES_TOPK)
-        fname = collection_name + '_' + str(search_param) + '_' + str(query) + "_" + str(top_k) + ".csv"
+        fname = f'{collection_name}_{str(search_param)}_{str(query)}_{str(top_k)}.csv'
         fname = os.path.join(RECALL_RES_TOPK, fname)
         with open(fname, 'w',encoding='utf-8') as f:
             f.write('query,topk,recall\n')
             for i in range(query):
-                line = str(i + 1) + ',' + str(top_k) + ',' + str(recalls[i] * 100) + "%"
+                line = f'{str(i + 1)},{str(top_k)},{str(recalls[i] * 100)}%'
                 f.write(line + '\n')
             f.write("max, avarage, min\n")
-            f.write(str(max(recalls) * 100) + "%," + str(round(count_all / query/ top_k, 3) * 100) + "%," + str(
-                min(recalls) * 100) + "%\n")
+            f.write(
+                (
+                    f"{str(max(recalls) * 100)}%,{str(round(count_all / query / top_k, 3) * 100)}%,{str(min(recalls) * 100)}"
+                    + "%\n"
+                )
+            )
         print("topk=", top_k, ", total accuracy", round(count_all / query / top_k, 3) * 100, "%")
         recall_res.append(round(count_all / query / top_k, 3))
     return recall_res
@@ -55,9 +60,8 @@ def load_gt_ids():
     gt_ids = []
     result = []
     with open(GROUNDTRUTH_FILE, 'r',encoding='utf-8') as f:
-        for line in f.readlines():
-            data = line.split()
-            if data:
+        for line in f:
+            if data := line.split():
                 result.append(int(data[0]))
             else:
                 gt_ids.append(result)
@@ -86,15 +90,10 @@ def compare_correct(query, top_k, rand, gt_ids, ids):
 
 def recall(client, collection_name, search_param):
     data = np.load(RECALL_QUERY_FILE).tolist()
-    query_list = []
     rand = sorted(random.sample(range(0, len(data)), RECALL_NQ))
-    for i in rand:
-        query_list.append(data[i])
+    query_list = [data[i] for i in rand]
     index_type = client.get_index_params(collection_name)
-    if index_type:
-        index_type = index_type[0]['index_type']
-    else:
-        index_type = 'FLAT'
+    index_type = index_type[0]['index_type'] if index_type else 'FLAT'
     # index_type = index_type[0]['index_type']
     search_params = get_search_params(search_param, index_type)
     print("collection name:", collection_name, "query list:", len(query_list), "topk:", RECALL_TOPK,
@@ -104,5 +103,4 @@ def recall(client, collection_name, search_param):
     time_cost = time.time() - time_start
     print("time_search = ", time_cost)
     save_search_res(collection_name, rand, results, search_param, RECALL_NQ)
-    recall_res = compute_recall(collection_name, RECALL_NQ, results, search_param, rand)
-    return recall_res
+    return compute_recall(collection_name, RECALL_NQ, results, search_param, rand)

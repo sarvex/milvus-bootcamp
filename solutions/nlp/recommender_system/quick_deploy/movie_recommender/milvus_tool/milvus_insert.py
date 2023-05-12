@@ -24,14 +24,14 @@ class VecToMilvus():
             if self.has_collec(collection_name):
                 self.collection = Collection(name=collection_name)
             else:
-                print('No collection {}'.format(collection_name))
+                print(f'No collection {collection_name}')
         except Exception as e:
             print('Milvus set collection error:', e)
 
     def creat_collection(self, collection_name):
         try:
             self.collection = Collection(name=collection_name, schema=schema)
-            print("Create collection {} successfully".format(collection_name))
+            print(f"Create collection {collection_name} successfully")
             return self.collection
         except Exception as e:
             print("Milvus create collection error:", e)
@@ -40,7 +40,7 @@ class VecToMilvus():
         try:
             self.set_collection(collection_name)
             status = self.collection.create_index(field_name="embedding", index_params=index_param)
-            print("Create index {} successfully".format(collection_name))
+            print(f"Create index {collection_name} successfully")
             return status
         except Exception as e:
             print("Milvus create index error:", e)
@@ -56,7 +56,7 @@ class VecToMilvus():
         try:
             self.set_collection(collection_name)
             status = self.collection.create_partition(partition_name)
-            print('Create partition {} successfully'.format(partition_name))
+            print(f'Create partition {partition_name} successfully')
             return status
         except Exception as e:
             print("Milvus create partition error:", e)
@@ -65,7 +65,7 @@ class VecToMilvus():
         try:
             self.set_collection(collection_name)
             self.collection.drop()
-            print("Drop collection {}".format(collection_name))
+            print(f"Drop collection {collection_name}")
         except Exception as e:
             print("Milvus drop collection error", e)
 
@@ -74,12 +74,14 @@ class VecToMilvus():
             if not self.has_collec(collection_name):
                 self.creat_collection(collection_name)
                 self.create_index(collection_name)
-                print("collection info: {}".format(self.collection))
+                print(f"collection info: {self.collection}")
             if (partition_name is not None) and (not self.has_partition(collection_name, partition_name)):
                 self.create_partition(collection_name, partition_name)
             mr = self.collection.insert(data=[ids, vectors], partition_name=partition_name)
             utility.get_connection().flush([collection_name])
-            print("Insert {} entities, there are {} entities after insert data.".format(len(ids), self.collection.num_entities))
+            print(
+                f"Insert {len(ids)} entities, there are {self.collection.num_entities} entities after insert data."
+            )
             return mr
         except Exception as e:
             print("Milvus insert error:", e)

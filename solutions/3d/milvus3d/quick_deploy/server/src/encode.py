@@ -44,7 +44,7 @@ class Encode:
         if num_point < 1024:
             fill_face = []
             fill_neighbor_index = []
-            for i in range(MAX_FACES - num_point):
+            for _ in range(MAX_FACES - num_point):
                 index = np.random.randint(0, num_point)
                 fill_face.append(face[index])
                 fill_neighbor_index.append(neighbor_index[index])
@@ -61,4 +61,4 @@ class Encode:
         corners = corners - torch.cat([centers, centers, centers], 0)
 
         return centers[np.newaxis, :, :], corners[np.newaxis, :, :], normals[np.newaxis, :, :], \
-               neighbor_index[np.newaxis, :, :]
+                   neighbor_index[np.newaxis, :, :]

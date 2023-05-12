@@ -16,11 +16,8 @@ def get_vectors(df_table):
     # Get lists of sequences in k-mers and labels in text from dataframe
     seq_to_kmers(df_table)
     words = list(df_table['kmers']) # list of all sequences in kmers
-    texts = []
-    for i in range(len(words)):
-        texts.append(' '.join(words[i]))
-    vectors = train_vec(texts)
-    return vectors
+    texts = [' '.join(word) for word in words]
+    return train_vec(texts)
 
 def format_data(ids, classes):
     # Get lists of sequences in k-mers and labels in text from dataframe

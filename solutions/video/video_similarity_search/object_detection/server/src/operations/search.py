@@ -15,13 +15,11 @@ def get_object_vector(model, path):
     times = []
     time = 0
     for image in images:
-        obj_vecs = model.yolo(path + '/' + image)
-        for vec in obj_vecs:
-            vectors.append(vec)
+        obj_vecs = model.yolo(f'{path}/{image}')
+        vectors.extend(iter(obj_vecs))
         time = time + 1
         new_time = '%010d' % (time)
-        for _ in range(len(obj_vecs)):
-            times.append(new_time)
+        times.extend(new_time for _ in range(len(obj_vecs)))
     return vectors, times
 
 def do_search(table_name, video_path, model, milvus_client, mysql_cli):

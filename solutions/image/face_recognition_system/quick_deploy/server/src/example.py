@@ -57,7 +57,7 @@ def main():
     # Insert vectors into demo_collection, return status and vectors id list
     status, ids = milvus.insert(collection_name=collection_name, records=vectors)
     if not status.OK():
-        print("Insert failed: {}".format(status))
+        print(f"Insert failed: {status}")
 
     # Flush collection  inserted data to disk.
     milvus.flush([collection_name])
@@ -79,7 +79,7 @@ def main():
     # Create ivflat index in demo_collection
     # You can search vectors without creating index. however, Creating index help to
     # search faster
-    print("Creating index: {}".format(index_param))
+    print(f"Creating index: {index_param}")
     status = milvus.create_index(collection_name, IndexType.IVF_FLAT, index_param)
 
     # describe index, get information of index
@@ -87,7 +87,7 @@ def main():
     print(index)
 
     # Use the top 10 vectors for similarity search
-    query_vectors = vectors[0:10]
+    query_vectors = vectors[:10]
 
     # execute vector similarity search
     search_param = {

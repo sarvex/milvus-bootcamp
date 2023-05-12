@@ -39,7 +39,7 @@ def mols_img(mols_path):
     # Get the molecular image file
     try:
         LOGGER.info(f"Successfully load molecular image: {mols_path}")
-        return FileResponse(UPLOAD_PATH + '/' + mols_path + '.png')
+        return FileResponse(f'{UPLOAD_PATH}/{mols_path}.png')
     except Exception as e:
         LOGGER.error("upload image error: {e}")
         return {'status': False, 'msg': e}, 400
@@ -85,7 +85,7 @@ async def search_data(request: Request, item: ItemSearch):
         ids, paths, distances = do_search(item.Table, item.Mol, item.Num, MILVUS_CLI, MYSQL_CLI)
         host = request.headers['host']
         for i in range(len(ids)):
-            tmp = "http://" + str(host) + "/data?mols_path=" + str(ids[i])
+            tmp = f"http://{str(host)}/data?mols_path={str(ids[i])}"
             ids[i] = tmp
         res = dict(zip(paths, zip(ids, distances)))
         res = sorted(res.items(), key=lambda item: item[1][1])

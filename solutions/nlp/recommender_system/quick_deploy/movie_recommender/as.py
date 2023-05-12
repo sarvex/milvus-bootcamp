@@ -37,15 +37,15 @@ from proto import cm_pb2_grpc as CM_PB2_GRPC
 def get_ums(uid):
     channel = grpc.insecure_channel('127.0.0.1:8910')
     stub = UM_PB2_GRPC.UMServiceStub(channel)
-    response = stub.um_call(UM_PB2.UserModelRequest(user_id=str(uid).encode(encoding='utf-8')))
-    return response
+    return stub.um_call(
+        UM_PB2.UserModelRequest(user_id=str(uid).encode(encoding='utf-8'))
+    )
 
 def get_recall(request):
 
     channel = grpc.insecure_channel('127.0.0.1:8950')
     stub = RECALL_PB2_GRPC.RecallServiceStub(channel)
-    response = stub.recall(request)
-    return response
+    return stub.recall(request)
 
 def get_cm(nid_list):
     channel = grpc.insecure_channel('127.0.0.1:8920')
@@ -53,14 +53,12 @@ def get_cm(nid_list):
     cm_request = CM_PB2.CMRequest()
     for nid in nid_list:
         cm_request.item_ids.append(str(nid).encode(encoding='utf-8'))
-    cm_response = stub.cm_call(cm_request,timeout=10)
-    return cm_response
+    return stub.cm_call(cm_request,timeout=10)
 
 def get_rank(request):
     channel = grpc.insecure_channel('127.0.0.1:8960')
     stub = RANK_PB2_GRPC.RankServiceStub(channel)
-    response = stub.rank_predict(request)
-    return response
+    return stub.rank_predict(request)
 
 class ASServerServicer(object):
     '''
@@ -100,9 +98,7 @@ class ASServerServicer(object):
         recall_res = get_recall(recall_req)
         nid_list = [x.nid for x in recall_res.score_pairs]
         cm_res = get_cm(nid_list)
-        item_dict = {}
-        for x in cm_res.item_infos:
-            item_dict[x.movie_id] = x
+        item_dict = {x.movie_id: x for x in cm_res.item_infos}
         rank_req = RANK_PB2.RankRequest()
         rank_req.user_info.CopyFrom(um_res.user_info)
         rank_req.item_infos.extend(cm_res.item_infos)
@@ -132,7 +128,7 @@ class ASServer(object):
             maximum_concurrent_rpcs=concurrency)
         servicer = ASServerServicer()
         as_pb2_grpc.add_ASServiceServicer_to_server(servicer, server)
-        server.add_insecure_port('[::]:{}'.format(port))
+        server.add_insecure_port(f'[::]:{port}')
         server.start()
         server.wait_for_termination()
 

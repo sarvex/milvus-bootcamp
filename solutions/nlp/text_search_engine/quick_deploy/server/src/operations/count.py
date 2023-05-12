@@ -11,8 +11,7 @@ def do_count(table_name, milvus_cli):
     try:
         if not milvus_cli.has_collection(table_name):
             return None
-        num = milvus_cli.count(table_name)
-        return num
+        return milvus_cli.count(table_name)
     except Exception as e:
         LOGGER.error( f"Error with count table {e}")
         sys.exit(1)

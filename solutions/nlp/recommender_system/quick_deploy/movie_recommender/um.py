@@ -41,12 +41,14 @@ class UMServerServicer(object):
         '''
         um_res = um_pb2.UserModelResponse()
         user_id = request.user_id
-        redis_res = self.redis_cli.get("{}##user_info".format(user_id))
+        redis_res = self.redis_cli.get(f"{user_id}##user_info")
         if redis_res is None:
             um_res.error.code = 500
-            um_res.error.text = "UM server get user_info from redis fail. ({})".format(str(request))
+            um_res.error.text = (
+                f"UM server get user_info from redis fail. ({str(request)})"
+            )
             return um_res
-            #raise ValueError("UM server get user_info from redis fail. ({})".format(str(request)))
+                #raise ValueError("UM server get user_info from redis fail. ({})".format(str(request)))
         um_res.error.code = 200
         user_info = json.loads(redis_res)
 
@@ -73,7 +75,7 @@ class UMServer(object):
             maximum_concurrent_rpcs=concurrency)
         servicer = UMServerServicer()
         um_pb2_grpc.add_UMServiceServicer_to_server(servicer, server)
-        server.add_insecure_port('[::]:{}'.format(port))
+        server.add_insecure_port(f'[::]:{port}')
         server.start()
         server.wait_for_termination()
 

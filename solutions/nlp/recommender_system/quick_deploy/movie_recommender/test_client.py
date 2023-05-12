@@ -35,14 +35,12 @@ def get_ums(u_id):
     stub = um_pb2_grpc.UMServiceStub(channel)
     um_request = um_pb2.UserModelRequest()
     um_request.user_id = str(u_id)
-    response = stub.um_call(um_request)
-    return response
+    return stub.um_call(um_request)
 
 def get_recall(recall_request):
     channel = grpc.insecure_channel('127.0.0.1:8950')
     stub = recall_pb2_grpc.RecallServiceStub(channel)
-    response = stub.recall(recall_request)
-    return response
+    return stub.recall(recall_request)
 
 def get_cm(cm_nid_list):
     channel = grpc.insecure_channel('127.0.0.1:8920')
@@ -50,21 +48,18 @@ def get_cm(cm_nid_list):
     cm_request = cm_pb2.CMRequest()
     for nid in cm_nid_list:
         cm_request.item_ids.append(str(nid).encode(encoding='utf-8'))
-    cm_response = stub.cm_call(cm_request,timeout=10)
-    return cm_response
+    return stub.cm_call(cm_request,timeout=10)
 
 def get_rank(rank_request):
     channel = grpc.insecure_channel('127.0.0.1:8960')
     stub = rank_pb2_grpc.RankServiceStub(channel)
-    response = stub.rank_predict(rank_request)
-    return response
+    return stub.rank_predict(rank_request)
 
 
 def get_as(as_request):
     channel = grpc.insecure_channel("127.0.0.1:8930")
     stub = as_pb2_grpc.ASServiceStub(channel)
-    response = stub.as_call(as_request)
-    return response
+    return stub.as_call(as_request)
 
 
 if __name__ == "__main__":

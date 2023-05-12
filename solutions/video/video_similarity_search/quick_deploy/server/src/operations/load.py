@@ -8,13 +8,14 @@ from config import DEFAULT_TABLE
 
 
 def get_video(path):
-    # Get the path to the image
-    video = []
-    for f in os.listdir(path):
-        if ((f.endswith(extension) for extension in
-             ['.gif']) and not f.startswith('.DS_Store')):
-            video.append(os.path.join(path, f))
-    return video
+    return [
+        os.path.join(path, f)
+        for f in os.listdir(path)
+        if (
+            (f.endswith(extension) for extension in ['.gif'])
+            and not f.startswith('.DS_Store')
+        )
+    ]
 
 def extract_features(video_dir, model, frame):
     # Get the vector of images

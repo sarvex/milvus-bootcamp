@@ -11,8 +11,7 @@ def do_upload(table_name, img_path, model, milvus_client):
             table_name = DEFAULT_TABLE
         milvus_client.create_collection(table_name)
         feat = model.resnet50_extract_feat(img_path)
-        ids = milvus_client.insert(table_name, [img_path], [feat])
-        return ids
+        return milvus_client.insert(table_name, [img_path], [feat])
     except Exception as e:
         LOGGER.error(f"Error with upload : {e}")
         sys.exit(1)
@@ -23,7 +22,7 @@ def extract_features(img_dir, model):
     for path in ['/*.png', '/*.jpg', '/*.jpeg', '/*.PNG', '/*.JPG', '/*.JPEG']:
         img_list.extend(glob(img_dir+path))
     try:
-        if len(img_list) == 0:
+        if not img_list:
             raise FileNotFoundError(f"There is no image file in {img_dir} and endswith ['/*.png', '/*.jpg', '/*.jpeg', '/*.PNG', '/*.JPG', '/*.JPEG']")
         cache = Cache('./tmp')
         feats = []
@@ -75,8 +74,7 @@ def do_count(table_name, milvus_cli):
     try:
         if not milvus_cli.has_collection(table_name):
             return None
-        num = milvus_cli.count(table_name)
-        return num
+        return milvus_cli.count(table_name)
     except Exception as e:
         LOGGER.error(f"Error with count table {e}")
         sys.exit(1)
@@ -88,8 +86,7 @@ def do_drop(table_name, milvus_cli):
     try:
         if not milvus_cli.has_collection(table_name):
             return f"Milvus doesn't have a collection named {table_name}"
-        status = milvus_cli.delete_collection(table_name)
-        return status
+        return milvus_cli.delete_collection(table_name)
     except Exception as e:
         LOGGER.error(f"Error with drop table: {e}")
         sys.exit(1)

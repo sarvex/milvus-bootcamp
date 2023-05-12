@@ -59,7 +59,7 @@ MYSQL_CLI = MySQLHelper()
 # Mkdir '/tmp/search-models'
 if not os.path.exists(UPLOAD_PATH):
     os.makedirs(UPLOAD_PATH)
-    LOGGER.info("mkdir the path:{} ".format(UPLOAD_PATH))
+    LOGGER.info(f"mkdir the path:{UPLOAD_PATH} ")
 
 
 LOGGER.info(
@@ -100,9 +100,9 @@ def get_progress():
     # Get the progress of 3d model
     try:
         cache = Cache('./tmp')
-        return "current: {}, total: {}".format(cache['current'], cache['total'])
+        return f"current: {cache['current']}, total: {cache['total']}"
     except Exception as e:
-        LOGGER.error("upload image error: {}".format(e))
+        LOGGER.error(f"upload image error: {e}")
         return {'status': False, 'msg': e}, 400
 
 
@@ -116,8 +116,8 @@ async def load_models(item: Item):
     # Insert all the image under the file path to Milvus/MySQL
     try:
         total_num = do_load(item.Table, item.File, transformer, MILVUS_CLI, MYSQL_CLI)
-        LOGGER.info("Successfully loaded data, total count: {}".format(total_num))
-        return "Successfully loaded data, total count: {}".format(total_num)
+        LOGGER.info(f"Successfully loaded data, total count: {total_num}")
+        return f"Successfully loaded data, total count: {total_num}"
     except Exception as e:
         LOGGER.error(e)
         return {'status': False, 'msg': e}, 400

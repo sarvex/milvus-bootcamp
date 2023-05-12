@@ -9,11 +9,7 @@ from config import DEFAULT_TABLE, CACHE_DIR
 def get_imgs_path(path):
     pics = os.listdir(path)
     pics.sort()
-    paths = []
-    for f in pics:
-        if f.endswith('.jpg'):
-            paths.append(os.path.join(path, f))
-    return paths
+    return [os.path.join(path, f) for f in pics if f.endswith('.jpg')]
 
 
 def get_image_vector(cache, model, path):
@@ -22,12 +18,10 @@ def get_image_vector(cache, model, path):
     vectors = []
     names = []
     cache['total'] = len(images)
-    current = 0
     # print("after sorted :", images)
-    for image in images:
-        vector = model.execute(path + '/' + image)
+    for current, image in enumerate(images, start=1):
+        vector = model.execute(f'{path}/{image}')
         vectors.append(vector)
-        current += 1
         cache['current'] = current
         name = image.split('.')[0]
         names.append(name)

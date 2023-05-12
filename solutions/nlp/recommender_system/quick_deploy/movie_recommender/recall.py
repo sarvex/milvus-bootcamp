@@ -43,13 +43,11 @@ class RecallServerServicer(object):
 
     def get_user_vector(self, user_info):
         dic = {"userid": [], "gender": [], "age": [], "occupation": []}
-        lod = [0]
         dic["userid"].append(hash2(user_info.user_id))
         dic["gender"].append(hash2(user_info.gender))
         dic["age"].append(hash2(user_info.age))
         dic["occupation"].append(hash2(user_info.job))
-        lod.append(1)
-
+        lod = [0, 1]
         dic["userid.lod"] = lod
         dic["gender.lod"] = lod
         dic["age.lod"] = lod
@@ -89,7 +87,7 @@ class RecallServerServicer(object):
         for entities in results:
             if len(entities) == 0:
                 recall_res.error.code = 500
-                recall_res.error.text = "Recall server get milvus fail. ({})".format(str(request))
+                recall_res.error.text = f"Recall server get milvus fail. ({str(request)})"
                 return recall_res
             for topk_film in entities:
                 #current_entity = topk_film.id
@@ -115,7 +113,7 @@ class RecallServer(object):
             maximum_concurrent_rpcs=concurrency)
         servicer = RecallServerServicer()
         recall_pb2_grpc.add_RecallServiceServicer_to_server(servicer, server)
-        server.add_insecure_port('[::]:{}'.format(port))
+        server.add_insecure_port(f'[::]:{port}')
         server.start()
         server.wait_for_termination()
 

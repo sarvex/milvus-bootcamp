@@ -25,8 +25,7 @@ def do_get_answer(table_name, question, mysql_cli):
     try:
         if not table_name:
             table_name = DEFAULT_TABLE
-        answer = mysql_cli.search_by_question(question, table_name)
-        return answer
+        return mysql_cli.search_by_question(question, table_name)
     except Exception as e:
         LOGGER.error(f" Error with search by question : {e}")
         sys.exit(1)

@@ -117,7 +117,7 @@ class RankServer(object):
             maximum_concurrent_rpcs=concurrency)
         servicer = RankServerServicer()
         rank_pb2_grpc.add_RankServiceServicer_to_server(servicer, server)
-        server.add_insecure_port('[::]:{}'.format(port))
+        server.add_insecure_port(f'[::]:{port}')
         server.start()
         server.wait_for_termination()
 

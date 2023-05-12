@@ -27,5 +27,5 @@ def do_search(table_name, model_path, transformer, milvus_client, mysql_cli):
         return paths, distances
 
     except Exception as e:
-        LOGGER.error(" Error with search : {}".format(e))
+        LOGGER.error(f" Error with search : {e}")
         sys.exit(1)

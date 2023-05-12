@@ -22,8 +22,8 @@ class FrameExtract:
         framerate = cap.get(cv2.CAP_PROP_FPS)
         # allframes = int(cv2.VideoCapture.get(cap, int(cv2.CAP_PROP_FRAME_COUNT)))
         success, image = cap.read()
-        if not os.path.exists(UPLOAD_PATH + '/' + prefix):
-            os.mkdir(UPLOAD_PATH + '/' + prefix)
+        if not os.path.exists(f'{UPLOAD_PATH}/{prefix}'):
+            os.mkdir(f'{UPLOAD_PATH}/{prefix}')
         images = []
         while success:
             if count % (int(framerate)/self.fps) == 0:

@@ -9,12 +9,24 @@ from logs import LOGGER
 
 # Get the path to the image
 def get_imgs(path):
-    pics = []
-    for f in os.listdir(path):
-        if ((f.endswith(extension) for extension in
-             ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG']) and not f.startswith('.DS_Store')):
-            pics.append(os.path.join(path, f))
-    return pics
+    return [
+        os.path.join(path, f)
+        for f in os.listdir(path)
+        if (
+            (
+                f.endswith(extension)
+                for extension in [
+                    '.png',
+                    '.jpg',
+                    '.jpeg',
+                    '.PNG',
+                    '.JPG',
+                    '.JPEG',
+                ]
+            )
+            and not f.startswith('.DS_Store')
+        )
+    ]
 
 
 # Get the vector of images

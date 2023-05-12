@@ -60,10 +60,7 @@ def extract_features(in_path, file_name):
         mesh.add_attribute('face_normal')
         face_normal = mesh.get_face_attribute('face_normal')
 
-        # get neighbors
-        faces_contain_this_vertex = []
-        for i in range(len(vertices)):
-            faces_contain_this_vertex.append(set([]))
+        faces_contain_this_vertex = [set([]) for _ in range(len(vertices))]
         centers = []
         corners = []
         for i in range(len(faces)):
@@ -90,7 +87,7 @@ def extract_features(in_path, file_name):
         faces = np.concatenate([centers, corners, face_normal], axis=1)
         neighbors = np.array(neighbors)
         _, filename = os.path.split(file_name)
-        filename = in_path + '/' + filename[:-4] + '.npz'
+        filename = f'{in_path}/{filename[:-4]}.npz'
 
         # save as npy
         np.savez(filename, faces=faces, neighbors=neighbors)
@@ -98,7 +95,7 @@ def extract_features(in_path, file_name):
 
         # return the path of the saved npy file
         return filename
-        
+
     except Exception as exc:
         print(f"{file_name} broken")
         traceback.print_exc()

@@ -27,15 +27,12 @@
 # limitations under the License.
 """Runs protoc with the gRPC plugin to generate messages and gRPC stubs."""
 
+
 from grpc_tools import protoc
 import os
 
 files = os.listdir('.')
-proto_files = []
-for x in files:
-    if ".proto" in x:
-        proto_files.append(x)
-
+proto_files = [x for x in files if ".proto" in x]
 for x in proto_files:
     protoc.main((
         '',

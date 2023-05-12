@@ -42,7 +42,7 @@ connections.connect("default", host=_HOST, port=_PORT)
 
 workers = 0 if os.name == 'nt' else 4
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print('Running on device: {}'.format(device))
+print(f'Running on device: {device}')
 
 mtcnn = MTCNN(
         image_size=160, margin=0, min_face_size=20,
@@ -171,13 +171,14 @@ def first_load():
     for i in range(5):
         entities[0] = indexing[i]
         entities[1] = embeddings[i]
-        print("Initiating Data Insertion {}".format(i))
+        print(f"Initiating Data Insertion {i}")
         print(collection.insert(entities))
-        print("Data Inserted {}".format(i))
+        print(f"Data Inserted {i}")
 
     for x in range(len(encoded)):
-        for z in range(len(indexing)):
-            id_to_identity.append((indexing[z], identity[x][z]))
+        id_to_identity.extend(
+            (indexing[z], identity[x][z]) for z in range(len(indexing))
+        )
     print("Id to identity Done")
     collection.load()
     print("Vectors loaded")
@@ -198,7 +199,11 @@ def get_image_vectors(file_loc):
         draw = ImageDraw.Draw(img)
         for i, box in enumerate(bbx):
             draw.rectangle(box.tolist(), outline=(255,0,0))
-            draw.text((box.tolist()[0] + 2,box.tolist()[1]), "Face-" + str(i), fill=(255,0,0))
+            draw.text(
+                (box.tolist()[0] + 2, box.tolist()[1]),
+                f"Face-{str(i)}",
+                fill=(255, 0, 0),
+            )
 
     return embeddings, img
 
@@ -212,32 +217,27 @@ def search_image(file_loc):
     search_params = {
         "params": {"nprobe": 2056},
     }
-    results = collection.search(query_vectors, "embedding", search_params, limit=3)
-    # if(len(results[0]) > 1 or len(results[1]) > 1):
-    #     print("Similar images found....!!!")
-    # print(results)
-
-    if results:
+    if results := collection.search(
+        query_vectors, "embedding", search_params, limit=3
+    ):
         temp = []
         plt.imshow(insert_image)
         for x in range(len(results)):
-            for i, v in id_to_identity:
-                if results[x][0].id == i:
-                    temp.append(v)
+            temp.extend(v for i, v in id_to_identity if results[x][0].id == i)
         # print(temp)
         for i, x in enumerate(temp):
             fig = plt.figure()
-            fig.suptitle('Face-' + str(i) + ", Celeb Folder: " + str(x))
-            currentFolder = './celeb_reorganized/' + str(x)
+            fig.suptitle(f'Face-{str(i)}, Celeb Folder: {str(x)}')
+            currentFolder = f'./celeb_reorganized/{str(x)}'
             total = min(len(os.listdir(currentFolder)), 6)
 
-            for i, file in enumerate(os.listdir(currentFolder)[0:total], 1):
+            for i, file in enumerate(os.listdir(currentFolder)[:total], 1):
                 fullpath = currentFolder+ "/" + file
                 img = mpimg.imread(fullpath)
                 plt.subplot(2, 3, i)
                 plt.imshow(img)
         plt.show(block = False)
-        if(len(temp))!=0:
+        if temp:
             print("Wohoo, Similar Images found!🥳️")
         print(temp)
 

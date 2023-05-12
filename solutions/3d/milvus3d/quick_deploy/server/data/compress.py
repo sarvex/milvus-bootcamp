@@ -33,7 +33,7 @@ def process(data_root, out_root, file_name):
                     data = pre_process(data=data)
                     write_file(data=data,out_path=in_path)
         except Exception as e:
-            print(" Error with check off file: {}".format(e))
+            print(f" Error with check off file: {e}")
             sys.exit(1)
     else:
         in_path = os.path.join(data_root, file_name)
@@ -51,7 +51,7 @@ def process(data_root, out_root, file_name):
         ms.save_current_mesh(out_path, save_face_color=False)
 
     except Exception as e:
-        print("Error with compressing off file: {}".format(e))
+        print(f"Error with compressing off file: {e}")
         sys.exit(1)
 
 
@@ -64,8 +64,8 @@ def write_file(out_path, data):
 def pre_process(data):
     data = deque(data)
     first_element = data.popleft()
-    firstline, secondline= first_element[0:3], first_element[3:]
-    
+    firstline, secondline = first_element[:3], first_element[3:]
+
     data.appendleft(secondline)
     data.appendleft(firstline)
     data = list(data)

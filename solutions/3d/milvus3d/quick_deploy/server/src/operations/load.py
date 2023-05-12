@@ -14,12 +14,14 @@ def get_models(path):
     """
     Get the path to the 3d model
     """
-    models = []
-    for f in os.listdir(path):
-        if ((f.endswith(extension) for extension in
-             ['npy']) and not f.startswith('.DS_Store')):
-            models.append(os.path.join(path, f))
-    return models
+    return [
+        os.path.join(path, f)
+        for f in os.listdir(path)
+        if (
+            (f.endswith(extension) for extension in ['npy'])
+            and not f.startswith('.DS_Store')
+        )
+    ]
 
 
 def extract_features(model_dir, transformer):
@@ -43,11 +45,11 @@ def extract_features(model_dir, transformer):
                 cache['current'] = i + 1
                 print("Extracting feature from image No. %d , %d images in total" % (i + 1, total))
             except Exception as e:
-                LOGGER.error(" Error with extracting feature from image: {}".format(e))
-                continue        
+                LOGGER.error(f" Error with extracting feature from image: {e}")
+                continue
         return feats, names
     except Exception as e:
-        LOGGER.error(" Error with extracting feature from image {}".format(e))
+        LOGGER.error(f" Error with extracting feature from image {e}")
         sys.exit(1)
 
 

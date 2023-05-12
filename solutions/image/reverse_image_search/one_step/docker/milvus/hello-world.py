@@ -69,10 +69,9 @@ hello_milvus = Collection("hello_milvus", schema, consistency_level="Strong")
 print(fmt.format("Start inserting entities"))
 num_entities = 3000
 entities = [
-    # provide the pk field because `auto_id` is set to False
-    [i for i in range(num_entities)],
-    [float(random.randrange(-20, -10)) for _ in range(num_entities)],  # field random
-    [[random.random() for _ in range(8)] for _ in range(num_entities)],  # field embeddings
+    list(range(num_entities)),
+    [float(random.randrange(-20, -10)) for _ in range(num_entities)],
+    [[random.random() for _ in range(8)] for _ in range(num_entities)],
 ]
 
 insert_result = hello_milvus.insert(entities)

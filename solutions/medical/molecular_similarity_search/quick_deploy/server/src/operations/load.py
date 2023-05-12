@@ -13,7 +13,7 @@ def save_mols_img(milvus_ids, smiles):
     for ids, mol in zip(milvus_ids, smiles):
         mol = Chem.MolFromSmiles(mol)
         sub_img = Draw.MolsToGridImage([mol], molsPerRow=1, subImgSize=(500, 500))
-        sub_img.save(UPLOAD_PATH + "/" + str(ids) + ".png")
+        sub_img.save(f"{UPLOAD_PATH}/{str(ids)}.png")
 
 def extract_features(filepath):
     # Extract all vectors from mol file

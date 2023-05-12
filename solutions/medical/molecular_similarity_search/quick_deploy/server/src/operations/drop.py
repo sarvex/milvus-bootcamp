@@ -9,9 +9,8 @@ def do_drop(table_name, milvus_cli, mysql_cli):
     try:
         mysql_cli.delete_table(table_name)
         if not milvus_cli.has_collection(table_name):
-            raise Exception("When drop table, there has no table named " + table_name)
-        status = milvus_cli.delete_collection(table_name)
-        return status
+            raise Exception(f"When drop table, there has no table named {table_name}")
+        return milvus_cli.delete_collection(table_name)
     except Exception as e:
         LOGGER.error(f"Error with  drop table: {e}")
         sys.exit(1)

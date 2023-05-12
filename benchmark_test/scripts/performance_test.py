@@ -24,22 +24,18 @@ def get_search_params(search_param, index_type):
 def get_nq_vec(query):
     data = np.load(QUERY_FILE_PATH)
     if len(data) > query:
-        return data[0:query].tolist()
-    else:
-        LOGGER.info(f'There is only {len(data)} vectors')
-        return data.tolist()
+        return data[:query].tolist()
+    LOGGER.info(f'There is only {len(data)} vectors')
+    return data.tolist()
 
 
 def performance(client, collection_name, search_param):
     index_type = client.get_index_params(collection_name)
-    if index_type:
-        index_type = index_type[0]['index_type']
-    else:
-        index_type = 'FLAT'
+    index_type = index_type[0]['index_type'] if index_type else 'FLAT'
     search_params = get_search_params(search_param, index_type)
     if not os.path.exists(PERFORMANCE_RESULTS_PATH):
         os.mkdir(PERFORMANCE_RESULTS_PATH)
-    result_filename = collection_name + '_' + str(search_param) + '_performance.csv'
+    result_filename = f'{collection_name}_{str(search_param)}_performance.csv'
     performance_file = os.path.join(PERFORMANCE_RESULTS_PATH, result_filename)
 
     with open(performance_file, 'w+', encoding='utf-8') as f:
@@ -52,24 +48,23 @@ def performance(client, collection_name, search_param):
                 client.search_vectors(collection_name, query_list, topk, search_params)
                 time_cost = time.time() - time_start
                 print(nq, topk, time_cost)
-                line = str(nq) + ',' + str(topk) + ',' + str(round(time_cost, 4)) + ',' + str(
-                    round(time_cost / nq, 4)) + '\n'
+                line = (
+                    f'{str(nq)},{str(topk)},{str(round(time_cost, 4))},{str(round(time_cost / nq, 4))}'
+                    + '\n'
+                )
                 f.write(line)
             f.write('\n')
     LOGGER.info("search_vec_list done !")
 
 def percentile_test(client, collection_name, search_param, percentile):
     index_type = client.get_index_params(collection_name)
-    if index_type:
-        index_type = index_type[0]['index_type']
-    else:
-        index_type = 'FLAT'
+    index_type = index_type[0]['index_type'] if index_type else 'FLAT'
     search_params = get_search_params(search_param, index_type)
 
     if not os.path.exists(PERFORMANCE_RESULTS_PATH):
         os.mkdir(PERFORMANCE_RESULTS_PATH)
 
-    result_filename = collection_name + '_' + str(search_param) + '_percentile.csv'
+    result_filename = f'{collection_name}_{str(search_param)}_percentile.csv'
     performance_file = os.path.join(PERFORMANCE_RESULTS_PATH, result_filename)
 
     with open(performance_file, 'w+', encoding='utf-8') as f:
@@ -86,7 +81,7 @@ def percentile_test(client, collection_name, search_param, percentile):
                 time_cost = np.array(time_cost)
                 time_cost = np.percentile(time_cost, float(percentile))
                 print(nq, topk, round(time_cost, 4))
-                line = str(nq) + ',' + str(topk) + ',' + str(round(time_cost, 4)) + '\n'
+                line = f'{str(nq)},{str(topk)},{str(round(time_cost, 4))}' + '\n'
                 f.write(line)
             f.write('\n')
     LOGGER.info("search_vec_list done !")

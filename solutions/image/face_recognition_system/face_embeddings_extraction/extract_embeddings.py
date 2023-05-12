@@ -105,6 +105,5 @@ for (i, imagePath) in enumerate(imagePaths):
 
 # dump the facial embeddings + names to disk
 data = {"embeddings": knownEmbeddings, "names": knownNames}
-f = open(args["embeddings"], "w")
-f.write(pickle.dumps(data))
-f.close()
+with open(args["embeddings"], "w") as f:
+	f.write(pickle.dumps(data))

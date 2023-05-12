@@ -14,8 +14,9 @@ class RecallByMilvus():
             if utility.has_collection(collection_name):
                 collection = Collection(name = collection_name)
             collection.load()
-            res = collection.search(vectors, anns_field="embedding", limit=TOP_K, param=search_params)
-            return res
+            return collection.search(
+                vectors, anns_field="embedding", limit=TOP_K, param=search_params
+            )
         except Exception as e:
             print('Milvus recall error: ', e)
 

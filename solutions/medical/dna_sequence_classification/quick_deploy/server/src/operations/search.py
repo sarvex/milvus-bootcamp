@@ -22,9 +22,10 @@ def search_in_milvus(table_name, query_sentence, milvus_cli, mysql_cli):
         ids, results_classes = mysql_cli.search_by_milvus_ids(vids, table_name)
         distances = [x.distance for x in results[0]]
         df_class = pd.read_table(SEQ_CLASS_PATH)
-        class_dict = {}
-        for i in range(len(df_class)):
-            class_dict[df_class['class'][i]] = df_class['gene_family'][i]
+        class_dict = {
+            df_class['class'][i]: df_class['gene_family'][i]
+            for i in range(len(df_class))
+        }
         seq_genes = [class_dict[int(x)] for x in results_classes]
         return ids, results_classes, seq_genes, distances
     except Exception as e:

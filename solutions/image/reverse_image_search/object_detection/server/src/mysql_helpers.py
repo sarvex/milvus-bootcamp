@@ -29,7 +29,7 @@ class MySQLHelper():
     def create_mysql_table(self, table_name):
         # Create mysql table if not exists
         self.test_connection()
-        sql = "create table if not exists " + table_name + "(milvus_id TEXT, image_path TEXT);"
+        sql = f"create table if not exists {table_name}(milvus_id TEXT, image_path TEXT);"
         try:
             self.cursor.execute(sql)
             LOGGER.debug(f"MYSQL create table: {table_name} with sql: {sql}")
@@ -40,7 +40,7 @@ class MySQLHelper():
     def load_data_to_mysql(self, table_name, data):
         # Batch insert (Milvus_ids, img_path) to mysql
         self.test_connection()
-        sql = "insert into " + table_name + " (milvus_id,image_path) values (%s,%s);"
+        sql = f"insert into {table_name} (milvus_id,image_path) values (%s,%s);"
         try:
             self.cursor.executemany(sql, data)
             self.conn.commit()
@@ -55,7 +55,7 @@ class MySQLHelper():
         try:
             results = []
             for x in ids:
-                sql = "select image_path from " + table_name + " where milvus_id='" + str(x) + "';"
+                sql = f"select image_path from {table_name} where milvus_id='{str(x)}';"
                 self.cursor.execute(sql)
                 res = self.cursor.fetchall()
                 results.append(res[0][0])
@@ -68,7 +68,7 @@ class MySQLHelper():
     def delete_table(self, table_name):
         # Delete mysql table if exists
         self.test_connection()
-        sql = "drop table if exists " + table_name + ";"
+        sql = f"drop table if exists {table_name};"
         try:
             self.cursor.execute(sql)
             LOGGER.debug(f"MYSQL delete table:{table_name}")
@@ -79,7 +79,7 @@ class MySQLHelper():
     def delete_all_data(self, table_name):
         # Delete all the data in mysql table
         self.test_connection()
-        sql = 'delete from ' + table_name + ';'
+        sql = f'delete from {table_name};'
         try:
             self.cursor.execute(sql)
             self.conn.commit()
@@ -91,7 +91,7 @@ class MySQLHelper():
     def count_table(self, table_name):
         # Get the number of mysql table
         self.test_connection()
-        sql = "select count(milvus_id) from " + table_name + ";"
+        sql = f"select count(milvus_id) from {table_name};"
         try:
             self.cursor.execute(sql)
             results = self.cursor.fetchall()

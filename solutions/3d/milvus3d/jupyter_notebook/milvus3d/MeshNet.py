@@ -47,7 +47,4 @@ class MeshNet(nn.Module):
         fea = self.classifier[:-1](fea)
         cls = self.classifier[-1:](fea)
 
-        if self.require_fea:
-            return cls, fea / torch.norm(fea)
-        else:
-            return cls
+        return (cls, fea / torch.norm(fea)) if self.require_fea else cls

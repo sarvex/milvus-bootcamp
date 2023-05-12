@@ -82,9 +82,7 @@ async def search_audio(request: Request, table_name: str = None, audio: UploadFi
             f.write(content)
         host = request.headers['host']
         _, paths, distances= do_search(host, table_name, query_audio_path, MILVUS_CLI, MYSQL_CLI)
-        names=[]
-        for i in paths:
-            names.append(os.path.basename(i))
+        names = [os.path.basename(i) for i in paths]
         res = dict(zip(paths, zip(names, distances)))
         # Sort results by distance metric, closest distances first
         res = sorted(res.items(), key=lambda item: item[1][1])
@@ -100,9 +98,7 @@ async def search_local_audio(request: Request, query_audio_path: str, table_name
     try:
         host = request.headers['host']
         _, paths, distances= do_search(host, table_name, query_audio_path, MILVUS_CLI, MYSQL_CLI)
-        names=[]
-        for i in paths:
-            names.append(os.path.basename(i))
+        names = [os.path.basename(i) for i in paths]
         res = dict(zip(paths, zip(names, distances)))
         # Sort results by distance metric, closest distances first
         res = sorted(res.items(), key=lambda item: item[1][1])

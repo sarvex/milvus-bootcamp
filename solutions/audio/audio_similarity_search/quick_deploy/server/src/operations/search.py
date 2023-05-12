@@ -13,7 +13,7 @@ def do_search(host,table_name, audio_path, milvus_client, mysql_cli):
         paths = mysql_cli.search_by_milvus_ids(vids, table_name)
         distances = [x.distance for x in vectors[0]]
         for i in range(len(paths)):
-            tmp = "http://" + str(host) + "/data?audio_path=" + str(paths[i])
+            tmp = f"http://{str(host)}/data?audio_path={str(paths[i])}"
             paths[i] = tmp
         return vids, paths, distances
     except Exception as e:

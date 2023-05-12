@@ -35,7 +35,7 @@ MYSQL_CLI = MySQLHelper()
 
 def convert_avi_to_mp4(avi_file_path):
     try:
-        new_path = avi_file_path[:-4] + '.mp4'
+        new_path = f'{avi_file_path[:-4]}.mp4'
         os.popen(
             "ffmpeg -i {input} -ac 2 -b:v 2000k -c:a aac -c:v libx264 -b:a 160k -vprofile high -bf 0 -strict experimental -f mp4 {output}".format(
                 input=avi_file_path, output=new_path))
@@ -141,29 +141,28 @@ async def search_images(request: Request, video: UploadFile = File(...), table_n
         convert_avi_to_mp4(video_path)
         host = request.headers['host']
         paths, objects, distances, times = do_search(table_name, video_path, MODEL, MILVUS_CLI, MYSQL_CLI)
-        res = ["http://" + str(host) + "/video/getVideo?video=" + video_path.replace(".avi", ".mp4")]
+        res = [
+            f"http://{str(host)}/video/getVideo?video="
+            + video_path.replace(".avi", ".mp4")
+        ]
         for i in range(len(paths)):
-            if DISTANCE_LIMIT is not None:
-                if float(distances[i]) < DISTANCE_LIMIT:
-                    re = {
-                        "object": objects[i],
-                        "image": "http://" + str(host) + "/data?image_path=" + paths[i],
-                        "distance": distances[i],
-                        "time": times[i]
-                        }
-                else:
-                    re = {
-                        "object": None,
-                        "image": None,
-                        "distance": None,
-                        "time": None
-                        }
-            else:
+            if (
+                DISTANCE_LIMIT is not None
+                and float(distances[i]) < DISTANCE_LIMIT
+                or DISTANCE_LIMIT is None
+            ):
                 re = {
                     "object": objects[i],
-                    "image": "http://" + str(host) + "/data?image_path=" + paths[i],
+                    "image": f"http://{str(host)}/data?image_path={paths[i]}",
                     "distance": distances[i],
-                    "time": times[i]
+                    "time": times[i],
+                }
+            else:
+                re = {
+                    "object": None,
+                    "image": None,
+                    "distance": None,
+                    "time": None
                     }
             if re["object"] is not None:
                 res.append(re)

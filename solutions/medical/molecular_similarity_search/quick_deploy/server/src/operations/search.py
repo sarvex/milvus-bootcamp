@@ -8,7 +8,7 @@ def do_search(table_name, molecular_name, top_k, milvus_cli, mysql_cli):
         table_name = DEFAULT_TABLE
     try:
         if not milvus_cli.has_collection(table_name):
-            raise Exception("When search table, there has no table named " + table_name)
+            raise Exception(f"When search table, there has no table named {table_name}")
         feat = smiles_to_vector(molecular_name)
         print(feat)
         vectors = milvus_cli.search_vectors(table_name, [feat], top_k)

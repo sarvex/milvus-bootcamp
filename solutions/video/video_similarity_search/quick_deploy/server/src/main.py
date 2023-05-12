@@ -110,11 +110,10 @@ async def search_images(request: Request, image: UploadFile = File(...), table_n
         paths, distances = do_search(host, table_name, img_path, MODEL, MILVUS_CLI, MYSQL_CLI)
         res = {}
         for p, d in zip(paths, distances):
-            if not p in res or res[p]>d:
+            if p not in res or res[p] > d:
                 res[p] = d
-        res = sorted(res.items(), key=lambda item: item[1])
         LOGGER.info("Successfully searched similar images!")
-        return res
+        return sorted(res.items(), key=lambda item: item[1])
     except Exception as e:
         LOGGER.error(e)
         return {'status': False, 'msg': e}, 400

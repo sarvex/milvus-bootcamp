@@ -27,7 +27,7 @@ def csv_to_milvus(collection_name, client):
     for filename in filenames:
         fname = os.path.join(BASE_FILE_PATH, filename)
         vectors = load_csv_data(fname)
-        vectors_ids = list(id for id in range(collection_rows, collection_rows + len(vectors)))
+        vectors_ids = list(range(collection_rows, collection_rows + len(vectors)))
         time_add_start = time.time()
         ids = client.insert(collection_name, vectors, vectors_ids)
         total_insert_time = total_insert_time + time.time() - time_add_start
@@ -54,14 +54,16 @@ def fvecs_to_milvus(collection_name, client):
     total_insert_time = 0
     while count < (TOTAL_VECTOR_COUNT // IMPORT_CHUNK_SIZE):
         vectors = load_fvecs_data(IMPORT_CHUNK_SIZE, count, fname)
-        vectors_ids =  list(id for id in range(count * IMPORT_CHUNK_SIZE, (count + 1) * IMPORT_CHUNK_SIZE))
+        vectors_ids = list(
+            range(count * IMPORT_CHUNK_SIZE, (count + 1) * IMPORT_CHUNK_SIZE)
+        )
         # vectors_ids = [id for id in range(count * IMPORT_CHUNK_SIZE, (count + 1) * IMPORT_CHUNK_SIZE)]
         time_add_start = time.time()
         _ = client.insert(collection_name, vectors, vectors_ids)
         total_insert_time = total_insert_time + time.time() - time_add_start
         print(count * IMPORT_CHUNK_SIZE, (count + 1) * IMPORT_CHUNK_SIZE, 'time:',
               time.time() - time_add_start)
-        count = count + 1
+        count += 1
     client.count(collection_name)
     print("total insert time: ", total_insert_time)
 
@@ -83,7 +85,7 @@ def npy_to_milvus(collection_name, client):
     collection_rows = client.count(collection_name)
     for filename in filenames:
         vectors = load_npy_data(os.path.join(BASE_FILE_PATH, filename))
-        vectors_ids =list(id for id in range(collection_rows, collection_rows + len(vectors)))
+        vectors_ids = list(range(collection_rows, collection_rows + len(vectors)))
         #vectors_ids = [id for id in range(collection_rows, collection_rows + len(vectors))]
         time_add_start = time.time()
         ids = client.insert(collection_name, vectors, vectors_ids)
@@ -113,14 +115,14 @@ def bvecs_to_milvus(collection_name, client):
     collection_rows = client.count(collection_name)
     while count < (TOTAL_VECTOR_COUNT // IMPORT_CHUNK_SIZE):
         vectors = load_bvecs_data(IMPORT_CHUNK_SIZE, count, fname)
-        vectors_ids = list(id for id in range(collection_rows, collection_rows + len(vectors)))
+        vectors_ids = list(range(collection_rows, collection_rows + len(vectors)))
         # vectors_ids = [id for id in range(collection_rows, collection_rows + len(vectors))]
         time_add_start = time.time()
         ids = client.insert(collection_name, vectors, vectors_ids)
         print(count * IMPORT_CHUNK_SIZE, (count + 1) * IMPORT_CHUNK_SIZE, 'time:',
               time.time() - time_add_start)
         total_insert_time = total_insert_time + time.time() - time_add_start
-        count = count + 1
+        count += 1
         collection_rows = collection_rows + len(ids)
     client.count(collection_name)
     print(f"total insert time: {total_insert_time}")

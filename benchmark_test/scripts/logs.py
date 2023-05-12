@@ -79,7 +79,7 @@ class MultiprocessHandler(logging.FileHandler):
         dir_name, _ = os.path.split(self.baseFilename)
         file_names = os.listdir(dir_name)
         result = []
-        prefix = self.prefix + '-'
+        prefix = f'{self.prefix}-'
         for file_name in file_names:
             if file_name[:len(prefix)] == prefix:
                 suffix = file_name[len(prefix):-4]
@@ -87,11 +87,11 @@ class MultiprocessHandler(logging.FileHandler):
                     result.append(os.path.join(dir_name, file_name))
         result.sort()
 
-        if len(result) < self.backupCount:
-            result = []
-        else:
-            result = result[:len(result) - self.backupCount]
-        return result
+        return (
+            []
+            if len(result) < self.backupCount
+            else result[: len(result) - self.backupCount]
+        )
 
     def emit(self, record):
         try:

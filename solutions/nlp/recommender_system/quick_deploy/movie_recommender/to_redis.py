@@ -34,7 +34,7 @@ def process_movie(lines, redis_cli):
                 "title" : title,
                 "genre" : genre
                 }
-        redis_cli.set("{}##movie_info".format(movie_id), json.dumps(movie_info))
+        redis_cli.set(f"{movie_id}##movie_info", json.dumps(movie_info))
 
 #1::F::1::10::48067
 def process_user(lines, redis_cli):
@@ -53,7 +53,7 @@ def process_user(lines, redis_cli):
                 "job": job,
                 "zip_code": zip_code
                 }
-        redis_cli.set("{}##user_info".format(user_id), json.dumps(user_info))
+        redis_cli.set(f"{user_id}##user_info", json.dumps(user_info))
 
 if __name__ == "__main__":
     r = redis.StrictRedis(host="127.0.0.1", port="6379")

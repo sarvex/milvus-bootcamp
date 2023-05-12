@@ -37,12 +37,14 @@ class CMServerServicer(object):
         cm_res = cm_pb2.CMResponse()
         item_ids = request.item_ids
         for item_id in item_ids:
-            redis_res = self.redis_cli.get("{}##movie_info".format(item_id))
+            redis_res = self.redis_cli.get(f"{item_id}##movie_info")
             if redis_res is None:
                 cm_res.error.code = 500
-                cm_res.error.text = "CM server get item_info from redis fail. ({})".format(str(request))
+                cm_res.error.text = (
+                    f"CM server get item_info from redis fail. ({str(request)})"
+                )
                 return cm_res
-                #raise ValueError("CM server get user_info from redis fail. ({})".format(str(request)))
+                        #raise ValueError("CM server get user_info from redis fail. ({})".format(str(request)))
             cm_info = json.loads(redis_res)
             item_info = cm_res.item_infos.add()
             if "movie_id" not in cm_info:
@@ -69,7 +71,7 @@ class CMServer(object):
             maximum_concurrent_rpcs=concurrency)
         servicer = CMServerServicer()
         cm_pb2_grpc.add_CMServiceServicer_to_server(servicer, server)
-        server.add_insecure_port('[::]:{}'.format(port))
+        server.add_insecure_port(f'[::]:{port}')
         server.start()
         server.wait_for_termination()
 

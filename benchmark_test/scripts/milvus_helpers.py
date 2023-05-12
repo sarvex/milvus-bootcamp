@@ -50,12 +50,11 @@ class MilvusHelper:
                                      dim=VECTOR_DIMENSION, is_primary=False)
                 schema = CollectionSchema(fields=[field1, field2], description="collection description")
                 self.collection = Collection(name=collection_name, schema=schema, shards_num=SHARDS_NUM)
-                LOGGER.debug("Create Milvus collection: {}".format(collection_name))
-                return True
+                LOGGER.debug(f"Create Milvus collection: {collection_name}")
             else:
                 self.collection = Collection(collection_name)
                 LOGGER.debug(f"collection {collection_name} exists")
-                return True
+            return True
         except Exception as e:
             LOGGER.error(f"Failed to load data to Milvus: {e}")
             sys.exit(1)
@@ -97,7 +96,7 @@ class MilvusHelper:
             LOGGER.debug("Successfully drop collection!")
             return "ok"
         except Exception as e:
-            LOGGER.error("Failed to drop collection: {}".format(e))
+            LOGGER.error(f"Failed to drop collection: {e}")
             sys.exit(1)
 
     def search_vectors(self, collection_name, vectors, top_k, search_params):
@@ -105,10 +104,10 @@ class MilvusHelper:
         try:
             self.set_collection(collection_name)
             res = self.collection.search(vectors, anns_field="embedding", param=search_params, limit=top_k)
-            LOGGER.debug("Successfully search in collection: {}".format(res))
+            LOGGER.debug(f"Successfully search in collection: {res}")
             return res
         except Exception as e:
-            LOGGER.error("Failed to search vectors in Milvus: {}".format(e))
+            LOGGER.error(f"Failed to search vectors in Milvus: {e}")
             sys.exit(1)
 
     def count(self, collection_name):
@@ -133,8 +132,7 @@ class MilvusHelper:
         if self.collection.has_partition(partition_name):
             return f"This partition {partition_name} exists"
         else:
-            partition = self.collection.create_partition(partition_name)
-            return partition
+            return self.collection.create_partition(partition_name)
 
     def delete_index(self, collection_name):
         # drop index

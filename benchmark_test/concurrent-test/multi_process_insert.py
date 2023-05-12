@@ -30,16 +30,16 @@ def create_collection(collection_name, dim=768):
                                  is_primary=False)
             schema = CollectionSchema(fields=[field1, field2], description="collection description")
             collection = Collection(name=collection_name, schema=schema, shards_num=SHARD_NUM)
-            print("Create Milvus collection: {}".format(collection))
+            print(f"Create Milvus collection: {collection}")
             return collection
     except Exception as e:
-        logging.error("Failed to create milvus collection: {}".format(e))
+        logging.error(f"Failed to create milvus collection: {e}")
         sys.exit(1)
 
 
 # Insert data into Milvus with a sub process.
 def sub_insert(task_id, col_name):
-    print("task_id {}, sub process {}".format(task_id, os.getpid()))
+    print(f"task_id {task_id}, sub process {os.getpid()}")
     vec = np.random.random((BATCH_SIZE, DIM)).tolist()
     connections.connect(host=MILVUS_HOST, port=MILVUS_PORT)
     collection = Collection(name=col_name)
@@ -47,9 +47,10 @@ def sub_insert(task_id, col_name):
     mr = collection.insert([vec])
     ids = mr.primary_keys
     time_end = time.time()
-    print("task {} cost time: {}".format(task_id, time_end - time_start))
-    logging.info("task {}, process {}, insert number:{},insert time:{}".format(task_id, os.getpid(), len(ids),
-                                                                               time_end - time_start))
+    print(f"task {task_id} cost time: {time_end - time_start}")
+    logging.info(
+        f"task {task_id}, process {os.getpid()}, insert number:{len(ids)},insert time:{time_end - time_start}"
+    )
 
 
 # Use multi processes to insert data.
@@ -63,8 +64,8 @@ def multi_insert_pool(collection_name):
         p.apply_async(sub_insert, (i, collection_name,))
     p.close()
     p.join()
-    print("total cost time: {}".format(time.time() - begin_time))
-    logging.info("Total cost time: {}".format(time.time() - begin_time))
+    print(f"total cost time: {time.time() - begin_time}")
+    logging.info(f"Total cost time: {time.time() - begin_time}")
 
 
 def main():
