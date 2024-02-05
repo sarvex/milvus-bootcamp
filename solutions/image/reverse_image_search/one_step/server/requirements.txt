@@ -5,7 +5,7 @@ numpy
 pydantic==1.8.2
 pymilvus==2.1.0
 towhee==0.8.0
-fastapi==0.65.2
+fastapi==0.109.1
 python-multipart==0.0.5
 pillow==8.4.0
 aiofiles==0.7.0
